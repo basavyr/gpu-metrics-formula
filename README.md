@@ -89,6 +89,26 @@ $$
 
 Memory and bandwidth have slightly higher importance since they directly affect training batch size and throughput.
 
+The implementation takes the reference values and the weights from [data.py](./src/data.py) through the `GPU_REFERENCE_METRICS` and `GPU_METRICS_DEFAULT_WEIGHTS` variables. These can be adjusted accordingly if the default values do not match the requirements.
+
+## Rationale for Reference Values and Weights
+
+The chosen reference values are intended to reflect **friendly-budget oriented AI workloads**, where typical consumer/prosumer GPUs are targeted:
+
+- $M_{\text{ref}} = 32$ GB: enough VRAM for medium-sized models and reasonable batch sizes.  
+- $B_{\text{ref}} = 1000$ GB/s: covers most modern GDDR6/GDDR6X cards.  
+- $P_{\text{ref}} = 400$ W: ensures that power-hungry GPUs are penalized without being unrealistic.  
+- $C_{\text{ref}} = 3500$ RON: approximates a friendly mid-range budget for acquisition.
+
+The **default weights** reflect the relative importance of each metric in deep-learning tasks:
+
+- $w_M = 0.25$: VRAM is crucial for batch size and model size.  
+- $w_B = 0.35$: Memory bandwidth directly affects matrix multiplication throughput (GEMM).  
+- $w_P = 0.20$: Power efficiency is relevant for operational cost.  
+- $w_C = 0.20$: Price efficiency controls upfront cost trade-offs.
+
+This weighting scheme ensures that **compute-relevant metrics dominate**, while cost and power still influence the final score.
+
 ### 5. Aggregator: CES or Geometric Mean
 
 Two mathematically consistent choices exist:
@@ -120,3 +140,32 @@ Typical safe values:
 $$
 \rho \in \{-1.0,\,-0.5,\,0,\,0.5,\,1.0\}.
 $$
+
+## Practical Notes
+
+1. **Numerical Stability**:  
+   - For the geometric mean (ρ = 0), always compute as  
+     $$
+     S_j = \exp\Big(\sum_T w_T \ln u_{T,j}\Big)
+     $$  
+     to avoid floating-point issues with small or large utilities.  
+   - Utilities $u_{T,j}$ must satisfy $u_{T,j} > 0$; clip small values to $\varepsilon \approx 10^{-6}$ if necessary.
+
+2. **Choice of ρ in CES Aggregator**:  
+   - $\rho = 0$: geometric mean (default, balanced trade-offs).  
+   - $\rho > 0$: allows compensation; weak metrics can be offset by strong ones.  
+   - $\rho < 0$: penalizes bottlenecks; a very low metric significantly reduces the overall score.  
+   - Safe range: $\rho \in \{-1.0, -0.5, 0, 0.5, 1.0\}$.
+
+3. **Interpretation**:  
+   - $S_j \in [0,1]$: higher values indicate better overall GPU quality.  
+   - The score is **relative** to the chosen references and weights; changing these will shift the scale and ranking.
+
+4. **Extensibility**:  
+   - Additional metrics (e.g., FP16 throughput, tensor cores) can be incorporated by defining new $u_{T,j}$ and updating weights $w_T$.  
+   - Reference values should be updated as GPU technology evolves.
+
+5. **Use Case Focus**:  
+   - Primarily designed for **AI/deep-learning workloads** where VRAM and bandwidth dominate.  
+   - Gaming or specialized workloads may require different weights or reference values.
+
