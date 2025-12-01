@@ -6,8 +6,8 @@ GPU_REFERENCE_METRICS = {
 }
 
 GPU_METRICS_DEFAULT_WEIGHTS = {
-    "vram": 0.25,
-    "bandwidth": 0.35,
+    "vram": 0.35,
+    "bandwidth": 0.25,
     "tdp": 0.2,
     "cost_ron": 0.2,
 }
