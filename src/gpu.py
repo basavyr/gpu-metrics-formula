@@ -1,7 +1,9 @@
+from typing import List
 from dataclasses import dataclass
 import logging
 
 from math import sqrt, log, pow
+import matplotlib.pyplot as plt
 
 from data import GPU_METRICS_DEFAULT_WEIGHTS, GPU_REFERENCE_METRICS
 
@@ -74,7 +76,23 @@ class GPUMetricTransform:
         return f_C_j/f_C_ref
 
 
-def compute_gpu_score(gpu: GPUMetric, rho: float = -1.5, metric_weights: dict = GPU_METRICS_DEFAULT_WEIGHTS) -> float:
+def plot_gpu_scores(gpu_list: List[GPUMetric]):
+    import numpy as np
+    bar_colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple',
+                  'tab:brown', 'tab:pink', 'tab:gray', 'tab:olive', 'tab:cyan']
+    names =[]
+    scores = []
+    for gpu in gpu_list:
+        names.append(gpu.name)
+        scores.append(compute_gpu_score(gpu))
+        bar_colors.append(np.random.choice(bar_colors, 1).item())
+    plt.bar(names, scores, color=bar_colors)
+    plt.ylabel("Quality Score")
+    plt.savefig("gpu-scores.png", dpi=300)
+    plt.close()
+
+
+def compute_gpu_score(gpu: GPUMetric, rho: float = -100, metric_weights: dict = GPU_METRICS_DEFAULT_WEIGHTS) -> float:
     """
     Apply the Weighted Constant Elasticity of Substitution (CES) aggregator, with the formula:
     S_j(\rho) = um_k w_j u_{k, j}^\rho\right)^{1/\rho}
@@ -93,9 +111,13 @@ def compute_gpu_score(gpu: GPUMetric, rho: float = -1.5, metric_weights: dict = 
 
 
 def main():
-
-    scores = [compute_gpu_score(gpu) for gpu in [GPUData.RTX_5070TI, GPUData.RX_9070XT,
-                                                 GPUData.RX_7900XTX, GPUData.RTX_5080,  GPUData.RTX_5070]]
+    gpus = [GPUData.RTX_5070TI,
+            GPUData.RX_9070XT,
+            GPUData.RX_7900XTX,
+            GPUData.RTX_5080,
+            GPUData.RTX_5070]
+    # scores = [compute_gpu_score(gpu) for gpu in gpus]
+    plot_gpu_scores(gpus)
 
 
 if __name__ == "__main__":
