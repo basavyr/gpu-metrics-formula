@@ -19,14 +19,17 @@ class GPUMetric:
     cost_ron: float
 
 
-@dataclass
-class GPUDATA:
+class GPUData:
     RTX_5070TI = GPUMetric(name="RTX_5070TI", vram=16,
-                           bandwidth=896, tdp=300, cost_ron=4500)
+                           bandwidth=896, tdp=305, cost_ron=4500)
     RX_9070XT = GPUMetric(name="RX_9070XT", vram=16,
-                          bandwidth=650, tdp=304, cost_ron=3500)
+                          bandwidth=650, tdp=310, cost_ron=3500)
     RX_7900XTX = GPUMetric(name="RX_7900XTX", vram=24,
                            bandwidth=960, tdp=400, cost_ron=5000)
+    RTX_5080 = GPUMetric(name="RTX_5080", vram=16,
+                         bandwidth=960, tdp=360, cost_ron=6400)
+    RTX_5070 = GPUMetric(name="RTX_5070", vram=12,
+                         bandwidth=670, tdp=250, cost_ron=3300)
 
 
 class GPUMetricTransform:
@@ -71,7 +74,7 @@ class GPUMetricTransform:
         return f_C_j/f_C_ref
 
 
-def compute_gpu_score(gpu: GPUMetric, rho: float = -0.5, metric_weights: dict = GPU_METRICS_DEFAULT_WEIGHTS) -> float:
+def compute_gpu_score(gpu: GPUMetric, rho: float = -1.5, metric_weights: dict = GPU_METRICS_DEFAULT_WEIGHTS) -> float:
     """
     Apply the Weighted Constant Elasticity of Substitution (CES) aggregator, with the formula:
     S_j(\rho) = um_k w_j u_{k, j}^\rho\right)^{1/\rho}
@@ -90,9 +93,9 @@ def compute_gpu_score(gpu: GPUMetric, rho: float = -0.5, metric_weights: dict = 
 
 
 def main():
-    compute_gpu_score(GPUDATA.RX_9070XT)
-    compute_gpu_score(GPUDATA.RTX_5070TI)
-    compute_gpu_score(GPUDATA.RX_7900XTX)
+
+    scores = [compute_gpu_score(gpu) for gpu in [GPUData.RTX_5070TI, GPUData.RX_9070XT,
+                                                 GPUData.RX_7900XTX, GPUData.RTX_5080,  GPUData.RTX_5070]]
 
 
 if __name__ == "__main__":
