@@ -15,6 +15,20 @@ Example (for an NVIDIA RTX 5080 from a Romanian retail store — **price in RON*
 python3 test_gpu.py --name RTX_5080 --vram 16 --bandwidth 960 --tdp 360 --cost 6400
 ```
 
+## Current results
+
+Within the [gpu.py](./src/gpu.py) there are some GPUs already configured with recent data regarding their cost and features. Computing the scores based on them yield the following plot:
+![](./src/gpu-scores.png).
+
+> More data can be added via a PR. One can check the `GPUData` class and update new devices accordingly.
+
+```python
+class GPUData:
+    RTX_5070TI = GPUMetric(name="RTX_5070TI", vram=16,
+                           bandwidth=896, tdp=305, cost_ron=4500)
+   ...
+```
+
 ## Formal Methodology
 
 ### 1. Metrics
