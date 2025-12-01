@@ -71,7 +71,7 @@ class GPUMetricTransform:
         return f_C_j/f_C_ref
 
 
-def compute_gpu_score(gpu: GPUMetric, rho: float = 1, metric_weights: dict = GPU_METRICS_DEFAULT_WEIGHTS) -> float:
+def compute_gpu_score(gpu: GPUMetric, rho: float = 0.001, metric_weights: dict = GPU_METRICS_DEFAULT_WEIGHTS) -> float:
     s_vram = metric_weights["vram"]*pow(GPUMetricTransform.u_M_j(gpu), rho)
     s_bandwidth = metric_weights["bandwidth"] * \
         pow(GPUMetricTransform.u_B_j(gpu), rho)
