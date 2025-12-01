@@ -71,7 +71,13 @@ class GPUMetricTransform:
         return f_C_j/f_C_ref
 
 
-def compute_gpu_score(gpu: GPUMetric, rho: float = 0.001, metric_weights: dict = GPU_METRICS_DEFAULT_WEIGHTS) -> float:
+def compute_gpu_score(gpu: GPUMetric, rho: float = -0.5, metric_weights: dict = GPU_METRICS_DEFAULT_WEIGHTS) -> float:
+    """
+    Apply the Weighted Constant Elasticity of Substitution (CES) aggregator, with the formula:
+    S_j(\rho) = um_k w_j u_{k, j}^\rho\right)^{1/\rho}
+    where
+    sum_kw_k = 1
+    """
     s_vram = metric_weights["vram"]*pow(GPUMetricTransform.u_M_j(gpu), rho)
     s_bandwidth = metric_weights["bandwidth"] * \
         pow(GPUMetricTransform.u_B_j(gpu), rho)
