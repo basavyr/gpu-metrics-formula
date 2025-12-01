@@ -12,8 +12,7 @@ The implementation is available via [`test_gpu.py`](src/test_gpu.py).
 Example (for an NVIDIA RTX 5080 from a Romanian retail store — **price in RON**):
 
 ```bash
-python3 test_gpu.py \
-    --name RTX_5080 --vram 16 --bandwidth 960 --tdp 360 --cost 6400
+python3 test_gpu.py --name RTX_5080 --vram 16 --bandwidth 960 --tdp 360 --cost 6400
 ```
 
 ## Formal Methodology
