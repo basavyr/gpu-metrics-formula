@@ -65,10 +65,7 @@ These guarantee:
 - HiB metrics grow sublinearly (diminishing returns),
 - LiB metrics produce higher utility for smaller values.
 
-All utilities satisfy:  
-$$
-u_{T,j} > 0.
-$$
+All utilities satisfy $u_{T,j} > 0$.
 
 ### 4. Weights
 
